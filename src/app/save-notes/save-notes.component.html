@@ -1,0 +1,198 @@
+<html>
+  <head>
+    <title>webpage</title>
+  </head>
+  <body>
+    <h1 style="text-align: center; margin-top: 10px; font-size: 50px">
+      Notes App
+    </h1>
+
+    <form
+      #notesForm="ngForm"
+      (ngSubmit)="notesForm.valid && onSubmit(notesForm)"
+      class="is-validated"
+    >
+      <input
+        type="hidden"
+        name="_id"
+        #_id="ngModel"
+        [(ngModel)]="notesService.selectedNote._id"
+      />
+      <div
+        style="
+          border: 1px solid;
+          height: 500px;
+          width: 450px;
+          margin-left: 180px;
+          margin-top: 70px;
+        "
+      >
+        <div style="margin-top: 150px; text-align: center">
+          <h2 style="margin-bottom: 60px; margin-top: -90px">
+            {{ actionType }}
+          </h2>
+
+          <div
+            style="margin-bottom: 30px; margin-left: 80px"
+            class="form-group"
+          >
+            <input
+              type="text"
+              #title="ngModel"
+              [(ngModel)]="notesService.selectedNote.title"
+              name="title"
+              placeholder="Enter Title"
+              style="height: 40px; width: 300px"
+              class="form-control"
+              required
+            />
+            <div *ngIf="notesForm.submitted && !title.valid && submitStatus">
+              <label class="errormsg">This field is required</label>
+            </div>
+          </div>
+          <div
+            style="margin-bottom: 30px; margin-left: 80px"
+            class="form-group"
+          >
+            <textarea
+              type="text"
+              #noteBody="ngModel"
+              [(ngModel)]="notesService.selectedNote.noteBody"
+              name="noteBody"
+              placeholder="Enter Description"
+              style="height: 100px; width: 300px"
+              class="form-control"
+              required
+            ></textarea>
+
+            <div *ngIf="notesForm.submitted && !title.valid && submitStatus">
+              <label class="errormsg">This field is required</label>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            (click)="changeSubmitStatus(notesForm.valid)"
+            class="btn btn-primary"
+            style="
+              height: 50px;
+              width: 100px;
+              font-size: 18px;
+              margin-left: 20px;
+            "
+          >
+            Submit
+          </button>
+          <button
+            type="button"
+            (click)="refreshForm(notesForm)"
+            class="btn btn-primary"
+            style="
+              height: 50px;
+              width: 100px;
+              margin-left: 20px;
+              font-size: 18px;
+            "
+          >
+            Cancel
+          </button>
+          <div
+            *ngIf="showSuccessMessage"
+            style="
+              background-color: #98e698;
+              height: 30px;
+              width: 200px;
+              text-align: center;
+              margin-left: 135px;
+              margin-top: 20px;
+              font-weight: bold;
+            "
+          >
+            Saved Successfully!
+          </div>
+          <div *ngIf="serverErrorMessages">
+            {{ serverErrorMessages }}
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div
+      style="
+        overflow-y: scroll;
+        height: 500px;
+        margin-left: 750px;
+        margin-top: -500px;
+        font-size: 20px;
+      "
+    >
+      <div *ngFor="let note of notesService.notesList">
+        <div
+          style="
+            border: 1px solid;
+            border-left: 0px;
+            border-top: 0px;
+            border-right: 0px;
+            margin-bottom: 50px;
+            max-width: 565px;
+          "
+        >
+          <div style="font-weight: bold; margin-bottom: -20px">
+            {{ note.title }}
+            <div>
+              <button
+                style="
+                  margin-left: 500px;
+                  height: 30px;
+                  width: 30px;
+                  margin-bottom: -3px;
+                "
+                class="iconbtn"
+                (click)="onEdit(note)"
+                class="btn btn-primary"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-pencil-fill"
+                  viewBox="0 0 16 16"
+                  style="margin-bottom: 10px; margin-left: -6px"
+                >
+                  <path
+                    d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div style="margin-left: 535px; border: 0px; margin-top: -30px">
+              <button
+                style="border: 0px"
+                (click)="onDelete(note._id, notesForm)"
+                class="btn btn-primary"
+                style="height: 30px; width: 30px"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-trash-fill"
+                  viewBox="0 0 16 16"
+                  style="margin-bottom: 10px; margin-left: -6px"
+                >
+                  <path
+                    d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div>{{ note.noteBody }}</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
