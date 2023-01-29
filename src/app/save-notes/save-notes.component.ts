@@ -23,8 +23,7 @@ export class SaveNotesComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    // call user service class function
-    // form.value return all the data inside the form
+
 
     if (form.value._id == '') {
       this.notesService.postSaveNotes(form.value).subscribe(
